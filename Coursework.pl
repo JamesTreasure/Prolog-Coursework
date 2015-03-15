@@ -36,7 +36,7 @@ prime(N) :-
 	sqrt(N,S), 		%Square root N and store in S.
 	okay(N,S,3).	%Pass N, Square root of N and 3 to okay.
 
-okay(N,S,D) :- D>S.	%D greater than square root of N.
+okay(_,S,D) :- D>S.	%D greater than square root of N.
 okay(N,S,D) :-
 	N =\= D*(N//D), %N not equal to D*(N divided by D (integer division))
 	D1 is D+2,		%Add two to D. Means even numbers are never prime.
@@ -71,31 +71,25 @@ p_list(A,B,L) :-
 next(2,3) :- !.
 next(A,A1) :- A1 is A + 2.
 
-member1(X,[H|_]) :- 
+
+my_membership(X,[H|_]) :- 
 	X==H,!.
-member1(X,[_|T]) :- 
-	member1(X,T).
- 
-remove_duplicates([],[]).		%Empty list has no duplicate
-remove_duplicates([H|T],X) :- 	%Head and tail of input list and variable X for new list
-	member1(H,T),				%check if the first element is a member of the list
-	!, 							%Stops multiple	
-	remove_duplicates(T,X).		%Recursion on remove_duplicates with tail of list
+my_membership(X,[_|T]) :- 
+	my_membership(X,T).
 
-remove_duplicates([H|T],[H|X]) :- 
-	remove_duplicates(T,X).
 
-%concat_list([1,2,3],[4,5,6],A).
-concat_list([],L1,L1).    
-concat_list([X|Tail],L2,[X|Tail1]):-
-        	concat_list(Tail,L2,Tail1).
+mysubtract([], _, []).
+mysubtract([Head|Tail], L2, L3) :-
+        my_membership(Head, L2),
+        !,
+        mysubtract(Tail, L2, L3).
+mysubtract([Head|Tail1], L2, [Head|Tail3]) :-
+        mysubtract(Tail1, L2, Tail3).
 
-test(A, B) :- 
-	prime_list(1, A, Primes), 
-	generate_numbers(A, Numbers), 
-	concat_list(Primes, Numbers, B).
-
-	
+mycomposites(Start,End,Comp):-
+	generate_numbers(End,Full),
+	prime_list(Start,End,Primes),
+	mysubtract(Full,Primes,Comp).
 
 
 
