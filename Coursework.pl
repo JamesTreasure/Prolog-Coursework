@@ -19,28 +19,35 @@ Q = [[3, 4, 7, 12], [2, 6, 8, 12], [4, 5, 9, 20], [3, 6, 9, 18],
 [4, 6, 10, 24], [5, 6, 11, 30], [4, 7, 11, 28], [3, 8, 11, 24], 
 [2, 9, 11, 18], [4, 8, 12, 32], [2, 10, 12, 20], [6, 7, 13, 42], 
 [5, 8, 13, 40], [4, 9, 13, 36], [3, 10, 13, 30], [6, 8, 14, 48], 
+
+step 1: using Sieve of Eratosthenes method to get prime number list which is less
+than 100
+step 2: geting composite number list according to prime number list	which is less
+than 100
+step 3: combining the prime number list with prime list[P,C,P+C,P*C] and 
+combining the composite number list with composite number list[C1,C2,C1+C2,C1*C2].
+In this step,firstly I am going to get rid of the pairs which its sum
+more than 100. Secondly, after adding the first filter, I am using mergesort 
+to order the list by it's product,afterthen,I will move out the list which it's 
+product is single(compare the product of the list and it's next list, if they are
+equal, then save all the list which have the same product with the first list.
+Otherwise, delete that list).
+
 */
 
 %Generates's a list of numbers
 %generateNumbers(10,L).
-generate_numbers(0,[]).
-generate_numbers(N,[Head|Tail]):-
-					N > 0,						%N must be greater than 0. Base case.
-                    Head is N,					%Sets the head of list to N
-                    N1 is N-1,					%Decrements N by 1
-                    generate_numbers(N1,Tail).	%Recurses on generateNumbers
-
 
 prime(2).
 prime(N) :- 
 	sqrt(N,S), 		%Square root N and store in S.
-	okay(N,S,3).	%Pass N, Square root of N and 3 to okay.
+	prime_checker(N,S,3).	%Pass N, Square root of N and 3 to prime_checker.
 
-okay(_,S,D) :- D>S.	%D greater than square root of N.
-okay(N,S,D) :-
+prime_checker(_,S,D) :- D>S.	%D greater than square root of N.
+prime_checker(N,S,D) :-
 	N =\= D*(N//D), %N not equal to D*(N divided by D (integer division))
 	D1 is D+2,		%Add two to D. Means even numbers are never prime.
-	okay(N,S,D1).	%Recurse with new D1
+	prime_checker(N,S,D1).	%Recurse with new D1
 
 %Generates prime numbers between two numbers. prime_list(1,100,A).
 prime_list(A,B,L) :-
@@ -78,18 +85,73 @@ my_membership(X,[_|T]) :-
 	my_membership(X,T).
 
 
-mysubtract([], _, []).
-mysubtract([Head|Tail], L2, L3) :-
-        my_membership(Head, L2),
-        !,
-        mysubtract(Tail, L2, L3).
-mysubtract([Head|Tail1], L2, [Head|Tail3]) :-
-        mysubtract(Tail1, L2, Tail3).
-
-mycomposites(Start,End,Comp):-
+my_subtract([], _, []).
+my_subtract([Head|Tail], L2, L3) :-
+    my_membership(Head, L2),
+    !,
+    my_subtract(Tail, L2, L3).
+my_subtract([Head|Tail1], L2, [Head|Tail3]) :-
+    my_subtract(Tail1, L2, Tail3).
+my_composites(Start,End,Comp):-
 	generate_numbers(End,Full),
 	prime_list(Start,End,Primes),
-	mysubtract(Full,Primes,Comp).
+	my_subtract(Full,Primes,Comp).
+my_between(N, M, K) :- 
+	N =< M, 
+	K = N.
+my_between(N, M, K) :- 
+	N < M, 
+	N1 is N+1, 
+	my_between(N1, M, K).
+
+
+
+check_div(Start,End,[]):-
+	Start > End,!.
+check_div(Start,End,[Start|L]):-
+	divisors(Start,List),
+	length(List,GetLength),
+	GetLength < 5,
+	mynext(Start,Start1),
+	check_div(Start1,End,L).
+check_div(Start,End,L):-
+	next(Start,Start1),
+	check_div(Start1,End,L).
+
+getLength(Number,Length):-
+	divisors(Number,Div),
+	length(Div,Length).
+
+divisors(X, Divs) :- 
+	bagof(D,divs(X,D), Divs).
+divs(X,D) :- 
+	my_between(1,X,D), 
+	0 is X mod D.
+
+mynext(2,3) :- !.
+mynext(A,A1) :- A1 is A + 1.
+
+
+
+
+
+
+generate_numbers(1,[]).
+generate_numbers(X,[[Head,Y,S]|Tail]):-
+					X > 1,						%N must be greater than 0. Base case.
+                    Head is X,
+                    Y is X+1,
+                    S is X + Y,
+                    X1 is X-1,					
+                    generate_numbers(X1,Tail).	
+
+
+
+
+
+generate_quads(X,Y):-
+	generate_numbers(49,X).
+
 
 
 
