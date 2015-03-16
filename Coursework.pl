@@ -37,6 +37,13 @@ Otherwise, delete that list).
 
 %Generates's a list of numbers
 %generateNumbers(10,L).
+generate_numbers(0,[]).
+generate_numbers(N,[Head|Tail]):-
+					N > 0,						%N must be greater than 0. Base case.
+                    Head is N,					%Sets the head of list to N
+                    N1 is N-1,					%Decrements N by 1
+                    generate_numbers(N1,Tail).	%Recurses on generateNumbers
+
 
 prime(2).
 prime(N) :- 
@@ -92,10 +99,12 @@ my_subtract([Head|Tail], L2, L3) :-
     my_subtract(Tail, L2, L3).
 my_subtract([Head|Tail1], L2, [Head|Tail3]) :-
     my_subtract(Tail1, L2, Tail3).
+
 my_composites(Start,End,Comp):-
 	generate_numbers(End,Full),
 	prime_list(Start,End,Primes),
 	my_subtract(Full,Primes,Comp).
+
 my_between(N, M, K) :- 
 	N =< M, 
 	K = N.
@@ -103,6 +112,11 @@ my_between(N, M, K) :-
 	N < M, 
 	N1 is N+1, 
 	my_between(N1, M, K).
+
+values_p_can_be(Start,End,Final):-
+	generate_numbers(End,Full),
+	check_div(Start,End,List),
+	my_subtract(Full,List,Final).
 
 
 
@@ -131,28 +145,24 @@ divs(X,D) :-
 mynext(2,3) :- !.
 mynext(A,A1) :- A1 is A + 1.
 
-
-
-
-
-
-generate_numbers(1,[]).
-generate_numbers(X,[[Head,Y,S]|Tail]):-
-					X > 1,						%N must be greater than 0. Base case.
-                    Head is X,
-                    Y is X+1,
-                    S is X + Y,
-                    X1 is X-1,					
-                    generate_numbers(X1,Tail).	
-
-
-
-
-
 generate_quads(X,Y):-
 	generate_numbers(49,X).
 
+gen_numbers(MaxSum, Result) :-
+    MaxSum> 1,
+    gen_numbers(2, MaxSum, 1, Result).
 
+gen_numbers(Sum, Sum, Sum, []).            % 'Sum' has reached max value
+gen_numbers(Sum, MaxSum, Sum, Result) :-   % 'X' has reached max value
+    Sum < MaxSum,
+    Sum1 is Sum + 1,
+    gen_numbers(Sum1, MaxSum, 1, Result).
+gen_numbers(Sum, MaxSum, X, [[X, Y, Sum]|Result]) :-
+    Sum =< MaxSum,
+    X < Sum,
+    Y is Sum - X,
+    X1 is X + 1,
+    gen_numbers(Sum, MaxSum, X1, Result).
 
 
 
