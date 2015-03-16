@@ -115,7 +115,7 @@ check_div(Start,End,[Start|L]):-
 	mynext(Start,Start1),
 	check_div(Start1,End,L).
 check_div(Start,End,L):-
-	next(Start,Start1),
+	mynext(Start,Start1),
 	check_div(Start1,End,L).
 
 getLength(Number,Length):-
