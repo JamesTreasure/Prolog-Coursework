@@ -86,12 +86,6 @@ next(2,3) :- !.
 next(A,A1) :- A1 is A + 2.
 
 
-my_membership(X,[H|_]) :- 
-	X==H,!.
-my_membership(X,[_|T]) :- 
-	my_membership(X,T).
-
-
 my_subtract([], _, []).
 my_subtract([Head|Tail], L2, L3) :-
     my_membership(Head, L2),
@@ -145,25 +139,70 @@ divs(X,D) :-
 mynext(2,3) :- !.
 mynext(A,A1) :- A1 is A + 1.
 
-generate_quads(X,Y):-
-	generate_numbers(49,X).
-
 gen_numbers(MaxSum, Result) :-
-    MaxSum> 1,
-    gen_numbers(2, MaxSum, 1, Result).
+    MaxSum> 1,								
+    gen_numbers(2, MaxSum, 2, Result).		
 
 gen_numbers(Sum, Sum, Sum, []).            % 'Sum' has reached max value
-gen_numbers(Sum, MaxSum, Sum, Result) :-   % 'X' has reached max value
+gen_numbers(Sum, MaxSum, Sum, Result) :-   
     Sum < MaxSum,
     Sum1 is Sum + 1,
-    gen_numbers(Sum1, MaxSum, 1, Result).
-gen_numbers(Sum, MaxSum, X, [[X, Y, Sum]|Result]) :-
-    Sum =< MaxSum,
-    X < Sum,
-    Y is Sum - X,
-    X1 is X + 1,
+    gen_numbers(Sum1, MaxSum, 2, Result).	%3,100,1,Result
+gen_numbers(Sum, MaxSum, X, [[X, Y, Sum, P]|Result]) :- 
+	Sum =< MaxSum,	
+	X < Sum,
+	Y is Sum - X, 
+	X < Y, 
+	P is X*Y,
+	X1 is X + 1, 
+	gen_numbers(Sum, MaxSum, X1, Result).
+
+gen_numbers(Sum, MaxSum, X, Result) :-
+	X1 is X + 1,
     gen_numbers(Sum, MaxSum, X1, Result).
 
+
+%member([_,_,Third,_] , [[a,b,c,d],[e,f,g,h],[i,j,k,l]]).
+remove_unique(Start,End,Final):-
+	gen_numbers(End,Numbers),
+	my_membership(Numbers,Final).
+	
+
+test(Start,End,Final):-
+	gen_numbers(End,Numbers),
+	my_membership(Numbers,Remove),
+	length(Remove,Final).
+
+delMember(_, [], []).
+delMember(X, [X|Xs], Y) :-
+	delMember(X, Xs, Y), !.
+delMember(X, [T|Xs], [T|Y]) :-
+	delMember(X, Xs, Y).
+
+
+element_at(X, List, Pos) :-
+    element_at(X, List, 1, Pos).
+element_at(X, [X|_], Pos, Pos).
+element_at(X, [_|T], Acc, Pos) :-
+    Acc1 is Acc + 1,
+    element_at(X, T, Acc1, Pos).
+
+last([X], X).
+last([_|T], X) :- last(T, X).
+ 
+forth([_,_,_,F|_], F).
+ 
+matching_forth([], _, 0).
+matching_forth([H|T], X, R) :- forth(H, X), matching_forth(T, X, RR), R is RR + 1.
+matching_forth([_|T], X, R) :- matching_forth(T, X, R).
+ 
+my_membership([], [], _).
+ 
+my_membership([H|T], [H|R], A) :- last(H, X), matching_forth(A, X, C), C > 1, my_membership(T, R, A).
+ 
+my_membership([_|T], R, A) :- my_membership(T, R, A).
+ 
+my_membership(L, R) :-  my_membership(L, R, L).
 
 
 
