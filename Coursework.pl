@@ -1,13 +1,3 @@
-/*
-Let X and Y be two integers with 1 < X < Y and X + Y <= 100.
-Mathematician S is given the sum X + Y
-Mathematician P is given the product X * Y
-The following conversation takes place:
-(a) P: I do not know the two numbers.
-(b) S: I knew you didn’t know. I don’t know either.
-(c) P: Now I know the two numbers. 
-(d) S: Now I know the two numbers.
-*/
 
 %-------s1--------
 my_between(N, M, K) :- 
@@ -55,7 +45,6 @@ matching_forth([H|T], X, R) :-
 matching_forth([_|T], X, R) :- 
 	matching_forth(T, X, R).
 
- 
 my_membership([], [], _).
  
 my_membership([H|T], [H|R], A) :- 
@@ -75,11 +64,6 @@ s1(Q,N):-
 	my_membership(Numbers,Q).
 
 %-------s2--------
-%S is odd.
-%S is not of form Q+2 where Q is prime
-%S is less than 55.
-%Remove all even numbers, all primes+2 and all numbers greater than 55.S
-
 prime(2).
 prime(N) :- 
 	sqrt(N,S), 		%Square root N and store in S.
@@ -172,29 +156,39 @@ s2_remove([H|T], TheList, Result) :-
 s2_remove([A|T], TheList, [A|Result]) :-
 	s2_remove(T, TheList, Result).
 
-/*
-check_div(Start,End,[Start|L]):-
-	divisors(Start,List),
-	length(List,GetLength),
-	GetLength < 5,
-	mynext(Start,Start1),
-	check_div(Start1,End,L).
-check_div(Start,End,L):-
-	next(Start,Start1),
-	check_div(Start1,End,L).
-*/
+divide([], [], []).
 
-tester(End,List):-
-	generateNumbers(End,Numbers),
-	remove_greater(Numbers,RemovedNumbers),
-	prime_list(End,Primes),
-	remove_greater(Primes,RemovedPrimes),
-	add_to_list(RemovedPrimes,NewList),
-	mysubtract(RemovedNumbers,NewList,SubList),
-	remove_even(SubList,SPossible),
-	s1(S1,End),
-	s2_remove(S1,SPossible,FF),
-	length(FF,List).
+divide([A], [A], []).
+
+divide([A, B|T], [A|Ta], [B|Tb]) :-
+	divide(T, Ta, Tb).
+
+product_sort([], []).
+
+product_sort([A], [A]).
+
+product_sort([A, B|T], S) :-
+	divide([A, B|T], L1, L2),
+	product_sort(L1, S1),
+	product_sort(L2, S2),
+	prod_merge(S1, S2, S).
+
+prod_merge(A, [], A).
+
+prod_merge([], A, A).
+
+prod_merge([A|Ta], [B|Tb], [A|S]) :-
+	A = [_, _, _, P1],
+	B = [_, _, _, P2],
+	P1 =< P2,
+	prod_merge(Ta, [B|Tb], S).
+
+prod_merge([A|Ta], [B|Tb], [B|S]) :-
+	A = [_, _, _, P1],
+	B = [_, _, _, P2],
+	P1 > P2,
+	prod_merge([A|Ta], Tb, S).
+
 
 s2(Q,End):-
 	generateNumbers(End,Numbers),
@@ -204,13 +198,11 @@ s2(Q,End):-
 	add_to_list(RemovedPrimes,NewList),
 	mysubtract(RemovedNumbers,NewList,SubList),
 	remove_even(SubList,SPossible),
-	s1(S1,End),!,
-	s2_remove(S1,SPossible,Q).
-
-%53,51,47,41,37,35,29,27,23,17,11,3,1
+	s1(S1,End),
+	s2_remove(S1,SPossible,AA),!,
+	product_sort(AA,Q),!.
 
 %-------s3------
-
 my_membership2([], [], _).
  
 my_membership2([H|T], [H|R], A) :- 
@@ -225,12 +217,34 @@ my_membership2([_|T], R, A) :-
 my_membership2(L, R) :-  
 	my_membership2(L, R, L), !.
 
+sum_merge(A, [], A).
+sum_merge([], A, A).
+sum_merge([A|Ta], [B|Tb], [A|S]) :-
+	A = [_, _, S1, _],
+	B = [_, _, S2, _],
+	S1 =< S2,
+	sum_merge(Ta, [B|Tb], S).
+
+sum_merge([A|Ta], [B|Tb], [B|S]) :-
+	A = [_, _, S1, _],
+	B = [_, _, S2, _],
+	S1 > S2,
+	sum_merge([A|Ta], Tb, S).
+
+sum_sort([], []).
+sum_sort([A], [A]).
+sum_sort([A, B|T], S) :-
+	divide([A, B|T], L1, L2),
+	sum_sort(L1, S1),
+	sum_sort(L2, S2),
+	sum_merge(S1, S2, S).
+
 s3(Q,N):-
 	s2(Result,N),
-	my_membership2(Result,Q).
+	my_membership2(Result,AA),!,
+	sum_sort(AA,Q),!.
 
 %------s4------
-
 third([_,_,Third|_], Third).
  
 matching_third([], _, 0).
@@ -255,8 +269,7 @@ my_membership3([_|T], R, A) :-
 my_membership3(L, R) :-  
 	my_membership3(L, R, L), !.
 
-
 s4(Q,N):-
-	s3(Result,N),
+	s3(Result,N),!,
 	my_membership3(Result,Q).
 
