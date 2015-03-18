@@ -49,7 +49,7 @@ forth([_,_,_,F|_], F).
  
 matching_forth([], _, 0).
 matching_forth([H|T], X, R) :- 
-	forth(H, X), 
+	forth(H, X),!,
 	matching_forth(T, X, RR), 
 	R is RR + 1.
 matching_forth([_|T], X, R) :- 
@@ -161,8 +161,6 @@ not_member(Element,[H|Tail]) :-
 	Element \= H,
 	not_member(Element, Tail),!.
 
-third([_,_,Third|_], Third).
-
 member_third(H,List):-
 	third(H,Third),
 	not_member(Third,List).
@@ -213,12 +211,52 @@ s2(Q,End):-
 
 %-------s3------
 
+my_membership2([], [], _).
+ 
+my_membership2([H|T], [H|R], A) :- 
+	last(H, X),
+	matching_forth(A, X, C),
+	C =:= 1, 
+	my_membership2(T, R, A).
+ 
+my_membership2([_|T], R, A) :- 
+	my_membership2(T, R, A).
+ 
+my_membership2(L, R) :-  
+	my_membership2(L, R, L), !.
+
+s3(Q,N):-
+	s2(Result,N),
+	my_membership2(Result,Q).
+
+%------s4------
+
+third([_,_,Third|_], Third).
+ 
+matching_third([], _, 0).
+matching_third([H|T], X, R) :- 
+	third(H, X),!,
+	matching_third(T, X, RR), 
+	R is RR + 1.
+matching_third([_|T], X, R) :- 
+	matching_third(T, X, R).
+
+my_membership3([], [], _).
+ 
+my_membership3([H|T], [H|R], A) :- 
+	third(H, X),
+	matching_third(A, X, C),
+	C =:= 1, 
+	my_membership3(T, R, A).
+ 
+my_membership3([_|T], R, A) :- 
+	my_membership3(T, R, A).
+ 
+my_membership3(L, R) :-  
+	my_membership3(L, R, L), !.
 
 
-
-
-
-
-
-
+s4(Q,N):-
+	s3(Result,N),
+	my_membership3(Result,Q).
 
