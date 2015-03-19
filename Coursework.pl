@@ -12,13 +12,15 @@ Remove unique products>
 
 2. <Number of elements in the list binding Q after executing s2(Q,100) is 145>
 <Generate a list of numbers that S must be. Remove any quad where S is not in
-that list.>
+that list. Sort the list using merge sort so that the list is ordered in
+ascending values of P>
 
 3. <Number of elements in the list binding Q after executing s3(Q,100) is 86>
-<Remove duplicate producuts.>
+<Remove duplicate producuts. Sort the list using merge sort so that the list
+is ordered in ascending values of S>
 
 4.
-<Remove duplicate sums.>
+<Remove duplicate sums leaving the final answer.>
 
 5. <Number of elements in the list binding Q after executing s4(Q,500) is 1>
 s4(Q,500) uses 7,629,274,328 inferences. */
@@ -72,31 +74,28 @@ s1(Q,N):-
 %------s2------
 prime(2).
 prime(N) :- 
-	sqrt(N,S), 		%Square root N and store in S.
-	check(N,S,3).	%Pass N, Square root of N and 3 to check.
+	sqrt(N,S), 
+	check(N,S,3).	
 
-check(_,S,D) :- D>S.	%D greater than square root of N.
+check(_,S,D) :- D>S.	
 check(N,S,D) :-
 	N =\= D*(N//D), 
-	D1 is D+2,		%Add two to D. Means even numbers are never prime.
-	check(N,S,D1).	%Recurse with new D1
+	D1 is D+2,		
+	check(N,S,D1).
 
-%Generates prime numbers between two numbers. prime_list(1,100,A).
 prime_list(B,L) :-
- 	 prime_list(2,B,L).	%Calls prime_list with A replaces by 2.
+ 	 prime_list(2,B,L).	
 
-prime_list(A,B,[]) :-	%Empty list if A is bigger than B. eg, (100,10,A).
-	 A > B, 		%Base case for when to stop recursing.
+prime_list(A,B,[]) :-
+	 A > B, 		
 	 !.
 
-%If it returns true then add A to the prime list.
 prime_list(A,B,[A|L]) :- 
-	prime(A), 		%Checks if first number is prime.
+	prime(A), 		
 	!, 
-   	next(A,A1),		%Adds two to A and returns A1.
-   	prime_list(A1,B,L). %Recursive call with new value A1.
+   	next(A,A1),		
+   	prime_list(A1,B,L).
 
-%If A wasn't prime in the prime check above, add two to A and recurse.
 prime_list(A,B,L) :- 
    next(A,A1),
    prime_list(A1,B,L).
