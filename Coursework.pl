@@ -264,7 +264,7 @@ s4(Q,N):-
 
 /*
 ?- consult('jat52.pl').
-% jat52.pl compiled 0.00 sec, 76 clauses
+% jat52.pl compiled 0.01 sec, 76 clauses
 true.
 ?- time(s1(Q,100)).
 % 11,107,031 inferences, 1.701 CPU in 1.731 seconds (98% CPU, 6528885 Lips)
